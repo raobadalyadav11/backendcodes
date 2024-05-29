@@ -1,5 +1,5 @@
 {
-  "name": "chaibackend",
+  "name": "backendcodes",
   "version": "1.0.0",
   "description": "",
   "type": "module",
@@ -14,5 +14,9 @@
     "node"
   ],
   "author": "Badal",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.1",
+    "prettier": "^3.2.5"
+  }
 }
