@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
-import cookies from "cookies-parser";
+import cookiesParser from "cookie-parser"
 const app = express();
-
-const port=process.env.PORT || 3000
 
 app.use(
   cors({
@@ -26,12 +24,16 @@ app.use(
 );
 app.use(express.static("public"));
 
-app.use(cookies());
+app.use(express(cookiesParser()))
 
-app.listen(process.env.PORT, () => {
-  console.log(`server is running on http://localhost:${process.env.PORT}`);
-});
+// routes imports
+import userRouter from "./routes/user.routes.js"
 
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+// routes declarations 
+
+app.use("/api/v1/users", userRouter);
+
+// http://localhost:8000/api/v1/users/register
+
+
+export default app;
