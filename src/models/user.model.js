@@ -29,13 +29,13 @@ const userSchema = new Schema(
       type: String, //cloudinary url for avatar
       required: true,
     },
-    coverImg: {
+    coverImgage: {
       type: String, //cloudinary url for cover image
     },
-    wathHistory: {
+    wathHistory: [{
       type: Schema.Types.ObjectId,
       ref: "Video",
-    },
+    }],
     password: {
       type: String,
       required: [true, "password is required"],
@@ -59,7 +59,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateToken = function () {
+userSchema.methods.generateAcessToken = function () {
   return jwt.sign({
      id: this._id ,
     email: this.email,
