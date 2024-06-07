@@ -31,6 +31,7 @@ const userSchema = new Schema(
     },
     coverImgage: {
       type: String, //cloudinary url for cover image
+      
     },
     wathHistory: [{
       type: Schema.Types.ObjectId,
