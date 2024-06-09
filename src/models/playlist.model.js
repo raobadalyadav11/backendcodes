@@ -5,12 +5,10 @@ const playListSchema = new Schema(
     name: {
       type: String,
       required: true,
-      index: true,
     },
     descrption: {
       type: String,
       required: true,
-      index: true,
     },
     videos: [
       {
@@ -28,4 +26,4 @@ const playListSchema = new Schema(
   }
 );
 
-const PlayList = mongoose.model("PlayList", playListSchema);
+export const PlayList = mongoose.model("PlayList", playListSchema);

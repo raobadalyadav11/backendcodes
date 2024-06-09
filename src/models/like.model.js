@@ -1,15 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 
 const likeSchema= new Schema({
-    likedBy:{
-        type:Schema.Types.ObjectId,
-        ref:"User"
-    },
     video:{
         type:Schema.Types.ObjectId,
         ref:"Video"
     },
-    Comment:{
+    comment:{
         type:Schema.Types.ObjectId,
         ref:"Comment"
     },
@@ -17,9 +13,9 @@ const likeSchema= new Schema({
         type:Schema.Types.ObjectId,
         ref:"Tweet"
     },
-    isLiked:{
-        type:Boolean,
-        default:false,
+    isLikedBy:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
 
     }
 },
@@ -28,4 +24,4 @@ const likeSchema= new Schema({
     }
 )
 
-const Like = mongoose.model("Like", likeSchema);
+export const Like = mongoose.model("Like", likeSchema);
