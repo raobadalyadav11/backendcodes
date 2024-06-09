@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const subscribtionSchema = new Schema(
   {
-    subscibe: {
+    subscribers: {
       type: Schema.Types.ObjectId, // one who is subscribed
       ref: "User",
     },
@@ -16,4 +16,4 @@ const subscribtionSchema = new Schema(
   }
 );
 
-const Subscribe = mongoose.model("Subscribe", subscribtionSchema);
+const Subscribtion = mongoose.model("Subscribtion", subscribtionSchema);
