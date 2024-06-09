@@ -159,12 +159,14 @@ const updateVideo = asyncHandler(async (req, res) => {
   //TODO: check if video exists or not
   //TODO: check if video is published or not
   //TODO: check if video belongs to current user or not
+  // console.log(videoId);
   if (!videoId) {
     throw new ApiError(400, "video ID is required");
   }
   try {
     // find video by id
     const video = await Video.findById(videoId);
+    // console.log(video);
     if (!video) {
       throw new ApiError(404, "video not found");
     }
@@ -177,30 +179,33 @@ const updateVideo = asyncHandler(async (req, res) => {
     if (description) video.description = description;
 
     // check if new thumnail is provided
-    if (req.files.thumbnail && req.files.thumbnail) {
-      const thumbnailLocalPath = req.files.thumbnail[0].path;
+    if (req.files && req.files.thumbnail) {
+      const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
+      console.log(thumbnailLocalPath);
       if (!thumbnailLocalPath) {
         throw new ApiError(400, "thumbnail files is required");
       }
       const thumbnail = await uploadFile(thumbnailLocalPath);
+      console.log(thumbnail.url);
       if (!thumbnail.url) {
         throw new ApiError(400, "failed to upload thumbnail");
       }
-      video.thumbnailUrl = thumbnail.url;
+      video.thumbnail = thumbnail.url;
     }
     // check if new video is provided
-    await video.save();
+    const updatedVideo=await video.save();
     res.status(200).json(
       new ApiResponse(
         200,
         {
-          video,
+          updatedVideo,
         },
-        "Video updated Successfully"
+        "upload thumnails updated Successfully"
       )
     );
   } catch (error) {
-    throw new ApiError(400, "Error fetching video");
+    console.log(error);
+    throw new ApiError(400, error.message||"Error upload thumnail");
   }
 });
 

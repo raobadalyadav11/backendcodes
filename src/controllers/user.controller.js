@@ -189,12 +189,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
   // Logging incoming request to troubleshoot
-// console.log("Request cookies:", req.cookies);
-// console.log("Request body:", req.body?.refreshToken);
+  // console.log("Request cookies:", req.cookies);
+  // console.log("Request body:", req.body?.refreshToken);
   const incomingRefreshToken =
     req.cookies?.refreshToken || req.body?.refreshToken;
 
-    if (!incomingRefreshToken) {
+  if (!incomingRefreshToken) {
     // console.log("incomingRefreshToken: " + incomingRefreshToken);
     throw new ApiError(401, "No refresh token provided unauthenticated");
   }
@@ -221,14 +221,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       await generateAccessAndRefreshToken(user._id);
     return res
       .status(200)
-      .cookie("accessToken", accessToken,options)
-      .cookie("refreshToken", newrefreshToken,options)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newrefreshToken, options)
       .json(
         new ApiResponse(
           200,
           {
             accessToken,
-          refreshToken:newrefreshToken,
+            refreshToken: newrefreshToken,
           },
           "Access token Refreshed"
         )
@@ -268,14 +268,14 @@ const updateAccountDetail = asyncHandler(async (req, res) => {
   if (!fullName || !email) {
     throw new ApiError(400, "All field  are required");
   }
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: { fullName, email: email },
     },
     { new: true }
   ).select("-password ");
-  return res.status(200).json(200, user, "Account updated");
+  return res.status(200).json(new ApiResponse(200, user, "Account updated"));
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
@@ -291,7 +291,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: avatar.url,
+      $set: {
+        avatar: avatar.url,
+      },
     },
     { new: true }
   ).select("-password");
@@ -313,7 +315,9 @@ const updateUserCoverAvatar = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: coverImage.url,
+      $set: {
+        coverImage: coverImage.url,
+      },
     },
     { new: true }
   ).select("-password");
@@ -327,66 +331,71 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
   if (!username) {
     throw new ApiError(400, "username is required");
   }
-  const channel = await User.aggregate([
-    {
-      $match: {
-        username: username?.toLowerCase(),
-      },
-    },
-    {
-      $lookup: {
-        from: "subscribtion",
-        localField: "_id",
-        foreignField: "channel",
-        as: "subscribers",
-      },
-    },
-    {
-      $lookup: {
-        from: "subscribtion",
-        localField: "_id",
-        foreignField: "subscriber",
-        as: "subscribersTo",
-      },
-    },
-    {
-      $addFields: {
-        subscribersCount: {
-          $size: "$subscribers",
+try {
+    const channel = await User.aggregate([
+      {
+        $match: {
+          username: username.toLowerCase(),
         },
-        channelsSubcribersToCount: {
-          $size: "$subscribersTo",
+      },
+      {
+        $lookup: {
+          from: "Subscribtion",
+          localField: "_id",
+          foreignField: "channel",
+          as: "subscribers",
         },
-        isSubscribed: {
-          $cond: {
-            if: {
-              $in: [req.user?._id, "$subscribers.subscriber"],
+      },
+      {
+        $lookup: {
+          from: "Subscribtion",
+          localField: "_id",
+          foreignField: "subscriber",
+          as: "subscribersTo",
+        },
+      },
+      {
+        $addFields: {
+          subscribersCount: {
+            $size: "$subscribers",
+          },
+          channelsSubcribersToCount: {
+            $size: "$subscribersTo",
+          },
+          isSubscribed: {
+            $cond: {
+              if: {
+                $in: [req.user?._id, "$subscribers.subscriber"],
+              },
+              then: true,
+              else: false,
             },
-            then: true,
-            else: false,
           },
         },
       },
-    },
-    {
-      $project: {
-        fullName: 1,
-        username: 1,
-        avatar: 1,
-        coverImage: 1,
-        subscribersCount: 1,
-        channelsSubcribersToCount: 1,
-        isSubscribed: 1,
-        email: 1,
+      {
+        $project: {
+          fullName: 1,
+          username: 1,
+          avatar: 1,
+          coverImage: 1,
+          subscribersCount: 1,
+          channelsSubcribersToCount: 1,
+          isSubscribed: 1,
+          email: 1,
+        },
       },
-    },
-  ]);
-  if (!channel?.length) {
-    throw new ApiError(404, "Channel Does not exit");
-  }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, channel[0], "User channel Fetch Successfully"));
+    ]);
+    if (!channel?.length) {
+      throw new ApiError(404, "Channel Does not exit");
+    }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, channel[0], "User channel Fetch Successfully"));
+} catch (error) {
+  console.error("Error fetching user channel profile:", error);
+throw new ApiError(500,"Error fetching user channel profile");
+}
 });
 
 const getWatchHistory = asyncHandler(async (req, res) => {

@@ -16,4 +16,4 @@ const subscribtionSchema = new Schema(
   }
 );
 
-const Subscribtion = mongoose.model("Subscribtion", subscribtionSchema);
+export const Subscribtion = mongoose.model("Subscribtion", subscribtionSchema);
