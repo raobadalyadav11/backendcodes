@@ -12,10 +12,12 @@ const playListSchema = new Schema(
       required: true,
       index: true,
     },
-    videos: {
-      type: Schema.Types.ObjectId,
-      ref: "Video",
-    },
+    videos: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Video",
+      },
+    ],
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -24,6 +26,6 @@ const playListSchema = new Schema(
   {
     timestamps: true,
   }
-)
+);
 
 const PlayList = mongoose.model("PlayList", playListSchema);

@@ -17,8 +17,8 @@ const generateAccessAndRefreshToken = async (userId) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    console.log("AccessToken:", accessToken); // Debugging log
-    console.log("RefreshToken:", refreshToken); // Debugging log
+    // console.log("AccessToken:", accessToken); // Debugging log
+    // console.log("RefreshToken:", refreshToken); // Debugging log
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
@@ -160,8 +160,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshToken: undefined,
+      $unset: {
+        refreshToken: 1,
       },
     },
     {
@@ -199,12 +199,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET_KEY
     );
 
-    const user = await User.findById(decodedToken?._id);
+    const user = await User.findOne(decodedToken?._id);
     if (!user) {
       throw new ApiError(401, "invalid refresh Token provided ");
     }
     if (incomingRefreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "No refresh token is expired or used");
+      throw new ApiError(401, "refresh token is expired or used");
     }
     const options = {
       httpOnly: true,
