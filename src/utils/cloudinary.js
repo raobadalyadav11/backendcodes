@@ -9,14 +9,17 @@ cloudinary.config({
 
  const uploadFile = async (localfile) => {
     try {
-        if(!localfile) return null
+        // if(!localfile) return null
+        if (!localfile) {
+            throw error("no files provided")
+        }
         // upload on cloudinary server 
     const responce=   await cloudinary.uploader.upload(localfile,{
-            resource_type:"image",
+            resource_type:"auto",
         });
         // file has been successful upload
         console.log("file is successfully uploaded");
-        console.log(responce.url);
+        // console.log(responce.url);
     // Delete the locally saved temporary file
     fs.unlinkSync(localfile);
 

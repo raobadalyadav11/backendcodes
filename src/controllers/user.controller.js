@@ -188,9 +188,14 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Logging incoming request to troubleshoot
+// console.log("Request cookies:", req.cookies);
+// console.log("Request body:", req.body?.refreshToken);
   const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
-  if (!incomingRefreshToken) {
+    req.cookies?.refreshToken || req.body?.refreshToken;
+
+    if (!incomingRefreshToken) {
+    // console.log("incomingRefreshToken: " + incomingRefreshToken);
     throw new ApiError(401, "No refresh token provided unauthenticated");
   }
   try {
@@ -198,9 +203,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET_KEY
     );
+    console.log("decodedToken: " + decodedToken._id);
 
     const user = await User.findOne(decodedToken?._id);
     if (!user) {
+      console.log("user : " + user);
       throw new ApiError(401, "invalid refresh Token provided ");
     }
     if (incomingRefreshToken !== user?.refreshToken) {
@@ -214,13 +221,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       await generateAccessAndRefreshToken(user._id);
     return res
       .status(200)
-      .cookie("accessToken", accessToken)
-      .cookie("refreshToken", newrefreshToken)
+      .cookie("accessToken", accessToken,options)
+      .cookie("refreshToken", newrefreshToken,options)
       .json(
         new ApiResponse(
           200,
-          accessToken,
-          newrefreshToken,
+          {
+            accessToken,
+          refreshToken:newrefreshToken,
+          },
           "Access token Refreshed"
         )
       );
