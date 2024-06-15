@@ -5,8 +5,11 @@ const playListSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+      lowercase: true,
+      index: true,
     },
-    descrption: {
+    description: {
       type: String,
       required: true,
     },
@@ -19,6 +22,7 @@ const playListSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
   },
   {
