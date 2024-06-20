@@ -16,6 +16,12 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Video",
     },
+    likes:[
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Like"
+      }
+    ]
   },
   {
     timestamps: true
