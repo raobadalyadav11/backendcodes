@@ -37,6 +37,10 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Video",
     }],
+    tweets: [{
+      type: Schema.Types.ObjectId,
+      ref: "Tweet",
+    }],
     password: {
       type: String,
       required: [true, "password is required"],
