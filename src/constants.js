@@ -1,1 +1,1 @@
-export const DB_NAME="mtubevideo"
+export const DB_NAME="ytvideo"
